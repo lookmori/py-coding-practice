@@ -1,0 +1,203 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum BankVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum QuestionType {
+  MCQ
+  TFQ
+  CODING
+}
+
+enum BankType {
+  EXAM
+  PRACTICE
+}
+
+model School {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now())
+
+  users         User[]
+  questionBanks QuestionBank[]
+}
+
+// 题库组：一个考试或练习的题目集合
+model QuestionBank {
+  id          String         @id @default(cuid())
+  name        String                    // 组名，如"期中考试"、"第一章练习"
+  type        BankType                  // EXAM 或 PRACTICE
+  description String?                   // 简介
+  durationSecs Int           @default(5400)   // 考试时长（秒），练习模式忽略
+  isActive    Boolean        @default(true)   // 是否对用户可见
+  visibility  BankVisibility @default(PRIVATE)
+  scheduledAt DateTime?                        // 考试开放时间（null = 立即可用）
+  endAt       DateTime?                        // 考试截止时间（null = 无截止）
+  createdById String?
+  schoolId    String?
+  createdAt   DateTime       @default(now())
+
+  createdBy    User?              @relation("BankCreator", fields: [createdById], references: [id])
+  school       School?            @relation(fields: [schoolId], references: [id])
+  questions    QuestionBankItem[]
+  examSessions ExamSession[]
+  practiceSessions PracticeSession[]
+}
+
+// 题库组与题目的关联（多对多，带排序）
+model QuestionBankItem {
+  id       String @id @default(cuid())
+  bankId   String
+  questionId String
+  order    Int    @default(0)
+
+  bank     QuestionBank @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  question Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([bankId, questionId])
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  displayName  String
+  passwordHash String
+  role         UserRole  @default(STUDENT)
+  schoolId     String?
+  teacherId    String?
+  createdAt    DateTime  @default(now())
+  lastLoginAt  DateTime?
+  deletedAt    DateTime?
+
+  school           School?   @relation(fields: [schoolId], references: [id])
+  teacher          User?     @relation("TeacherStudents", fields: [teacherId], references: [id])
+  students         User[]    @relation("TeacherStudents")
+  createdBanks     QuestionBank[] @relation("BankCreator")
+  examSessions     ExamSession[]
+  practiceSessions PracticeSession[]
+  notifications    Notification[]
+}
+
+model Notification {
+  id              String   @id @default(cuid())
+  recipientId     String
+  sessionType     String
+  sessionId       String
+  answerId        String
+  questionContent String
+  isRead          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  recipient User @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, isRead])
+  @@index([recipientId, createdAt])
+}
+
+model Question {
+  id              String       @id @default(cuid())
+  type            QuestionType
+  content         String
+  category        String
+  optionA         String?
+  optionB         String?
+  optionC         String?
+  optionD         String?
+  correctAnswer   String
+  description     String?
+  scoringCriteria String?
+  createdAt       DateTime     @default(now())
+
+  bankItems       QuestionBankItem[]
+  examAnswers     ExamAnswer[]
+  practiceAnswers PracticeAnswer[]
+}
+
+model ExamSession {
+  id             String    @id @default(cuid())
+  userId         String
+  bankId         String?                // 关联的题库组
+  startedAt      DateTime  @default(now())
+  submittedAt    DateTime?
+  durationSecs   Int       @default(5400)
+  objectiveScore Int?
+  switchCount    Int       @default(0)
+
+  user         User          @relation(fields: [userId], references: [id])
+  bank         QuestionBank? @relation(fields: [bankId], references: [id])
+  answers      ExamAnswer[]
+  switchEvents SwitchEvent[]
+}
+
+model ExamAnswer {
+  id         String   @id @default(cuid())
+  sessionId  String
+  questionId String
+  userAnswer String?
+  isCorrect  Boolean?
+  comment    String?  // 管理员评语
+  savedAt    DateTime @default(now())
+
+  session  ExamSession @relation(fields: [sessionId], references: [id])
+  question Question    @relation(fields: [questionId], references: [id])
+
+  @@unique([sessionId, questionId])
+}
+
+model SwitchEvent {
+  id         String   @id @default(cuid())
+  sessionId  String
+  occurredAt DateTime @default(now())
+
+  session ExamSession @relation(fields: [sessionId], references: [id])
+}
+
+model PracticeSession {
+  id              String    @id @default(cuid())
+  userId          String
+  bankId          String?                // 关联的题库组
+  participantName String
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  durationSecs    Int?
+  correctCount    Int?
+
+  user    User             @relation(fields: [userId], references: [id])
+  bank    QuestionBank?    @relation(fields: [bankId], references: [id])
+  answers PracticeAnswer[]
+}
+
+model PracticeAnswer {
+  id         String          @id @default(cuid())
+  sessionId  String
+  questionId String
+  userAnswer String?
+  isCorrect  Boolean?
+  isSkipped  Boolean         @default(false)
+  comment    String?  // 管理员评语
+  answeredAt DateTime        @default(now())
+
+  session  PracticeSession @relation(fields: [sessionId], references: [id])
+  question Question        @relation(fields: [questionId], references: [id])
+
+  @@unique([sessionId, questionId])
+}
