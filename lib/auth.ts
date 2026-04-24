@@ -24,6 +24,7 @@ export const authOptions: NextAuthOptions = {
           },
           select: {
             id: true,
+            username: true,
             displayName: true,
             passwordHash: true,
             role: true,

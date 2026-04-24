@@ -16,7 +16,7 @@ interface MarkdownContentProps {
 export default function MarkdownContent({ content, className = "" }: MarkdownContentProps) {
   const components: Components = {
     // 代码块（```python ... ```）
-    code({ className: cls, children, ...props }) {
+    code({ className: cls, children }) {
       const match = /language-(\w+)/.exec(cls ?? "");
       const isBlock = !!match;
       const codeStr = String(children).replace(/\n$/, "");
@@ -46,7 +46,6 @@ export default function MarkdownContent({ content, className = "" }: MarkdownCon
                 padding: "16px",
                 background: "#1e1e1e",
               }}
-              {...props}
             >
               {codeStr}
             </SyntaxHighlighter>
@@ -58,7 +57,6 @@ export default function MarkdownContent({ content, className = "" }: MarkdownCon
       return (
         <code
           className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-pink-600"
-          {...props}
         >
           {children}
         </code>
