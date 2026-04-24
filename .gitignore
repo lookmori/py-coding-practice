@@ -12,7 +12,8 @@
 # next.js
 /.next/
 /out/
-
+/.kiro/
+/.vscode/
 # production
 /build
 
