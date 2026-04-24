@@ -105,6 +105,7 @@ function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: ()
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={alt}
@@ -154,6 +155,7 @@ export default function QuestionImage({ src, alt = "image", className = "" }: Qu
           className={`relative inline-block ${state !== "loaded" ? "hidden" : ""}`}
           onClick={() => state === "loaded" && setLightboxOpen(true)}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}
             alt={alt}
@@ -176,6 +178,7 @@ export default function QuestionImage({ src, alt = "image", className = "" }: Qu
 
         {/* 隐藏的 img 用于触发 onLoad/onError（当 state=loading 时） */}
         {state === "loading" && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}
             alt=""

@@ -56,7 +56,6 @@ export default function UsersClient() {
   const [showCreate, setShowCreate] = useState(false);
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [createRole, setCreateRole] = useState<"TEACHER" | "STUDENT">("TEACHER");
-  const [createUsername, setCreateUsername] = useState("");
   const [createDisplayName, setCreateDisplayName] = useState("");
   const [createPassword, setCreatePassword] = useState("123456");
   const [createSchoolId, setCreateSchoolId] = useState("");
@@ -186,7 +185,7 @@ export default function UsersClient() {
   }
 
   function toggleSelect(id: string) {
-    setSelectedIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+    setSelectedIds(prev => { const n = new Set(prev); if (n.has(id)) { n.delete(id); } else { n.add(id); } return n; });
   }
 
   function toggleSelectAll() {
@@ -254,7 +253,7 @@ export default function UsersClient() {
             {(["TEACHER", "STUDENT"] as const).map(r => (
               <button
                 key={r}
-                onClick={() => { setCreateRole(r); setCreateError(null); setCreateSchoolId(""); setCreateTeacherId(""); setCreateUsername(""); }}
+                onClick={() => { setCreateRole(r); setCreateError(null); setCreateSchoolId(""); setCreateTeacherId(""); }}
                 className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${createRole === r ? "border-[#58a6ff] bg-[#388bfd]/20 text-[#58a6ff]" : "border-th-border bg-th-bg text-th-text2 hover:bg-th-hover"}`}
               >
                 {r === "TEACHER" ? "老师" : "学生"}
@@ -270,8 +269,6 @@ export default function UsersClient() {
                 onChange={sid => {
                   setCreateSchoolId(sid);
                   setCreateTeacherId("");
-                  const school = schools.find(s => s.id === sid);
-                  setCreateUsername(school ? school.code + "_" : "");
                 }}
                 options={schools.map(s => ({ value: s.id, label: `${s.name}（${s.code}）` }))}
                 placeholder="请选择学校"
@@ -323,7 +320,7 @@ export default function UsersClient() {
           {createError && <p className="text-xs text-[#f85149]">{createError}</p>}
           <div className="flex gap-2 justify-end">
             <button
-              onClick={() => { setShowCreate(false); setCreateError(null); setCreateSchoolId(""); setCreateTeacherId(""); setCreateUsername(""); setCreateDisplayName(""); setCreatePassword("123456"); }}
+              onClick={() => { setShowCreate(false); setCreateError(null); setCreateSchoolId(""); setCreateTeacherId(""); setCreateDisplayName(""); setCreatePassword("123456"); }}
               className="rounded-lg border border-th-border bg-th-bg px-4 py-2 text-sm text-th-text2 hover:bg-th-hover"
             >
               取消

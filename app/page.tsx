@@ -1,6 +1,5 @@
 import { getServerSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import HomeClient from "./HomeClient";
 
 export default async function HomePage() {

@@ -157,7 +157,6 @@ export default function GradeClient({ initialExamCount, initialPracticeCount }: 
   const [page, setPage] = useState(1);
   const [data, setData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [gradedIds, setGradedIds] = useState<Set<string>>(new Set());
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchData = useCallback(async (t: BankType, p: number, s: string) => {
@@ -189,7 +188,6 @@ export default function GradeClient({ initialExamCount, initialPracticeCount }: 
     setPage(1);
     setSearch("");
     setSearchInput("");
-    setGradedIds(new Set());
   }
 
   function handleGraded(id: string) {

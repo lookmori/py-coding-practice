@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getServerSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { formatDuration } from "@/lib/utils";
 import ExamRecordsClient from "./ExamRecordsClient";
 
 export default async function ExamRecordsPage() {

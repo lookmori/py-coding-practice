@@ -88,7 +88,7 @@ export default function HomeClient({ userName, isAdmin }: Props) {
           <p className="text-th-muted text-sm font-mono">
             <span className="text-[#ff7b72]">print</span>
             <span className="text-th-text">(</span>
-            <span className="text-[#a5d6ff]">"准备好挑战了吗？"</span>
+            <span className="text-[#a5d6ff]">&quot;准备好挑战了吗？&quot;</span>
             <span className="text-th-text">)</span>
           </p>
         </motion.div>
