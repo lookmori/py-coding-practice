@@ -192,7 +192,6 @@ export default function GradeClient({ initialExamCount, initialPracticeCount }: 
 
   function handleGraded(id: string) {
     // 只更新本地 state，不重新请求，避免页面闪烁
-    setGradedIds(prev => new Set(prev).add(id));
     setData(prev => {
       if (!prev) return prev;
       const remaining = prev.items.filter(i => i.id !== id);
