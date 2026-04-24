@@ -11,6 +11,8 @@ import {
 } from "@/lib/account";
 import bcrypt from "bcryptjs";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession();
   try {

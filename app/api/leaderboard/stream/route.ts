@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/leaderboard/stream?bankId=xxx
 // Server-Sent Events 实时推送排行榜
 export async function GET(req: NextRequest) {

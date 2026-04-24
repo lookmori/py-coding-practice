@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession, requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const PAGE_SIZE = 10;
 
 // GET /api/admin/grade/list?type=exam|practice&page=1&search=xxx
