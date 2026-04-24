@@ -35,7 +35,8 @@ export default function MarkdownContent({ content, className = "" }: MarkdownCon
               <span className="ml-1 text-xs text-gray-400">{lang}</span>
             </div>
             <SyntaxHighlighter
-              style={vscDarkPlus}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              style={vscDarkPlus as any}
               language={lang}
               PreTag="div"
               customStyle={{
